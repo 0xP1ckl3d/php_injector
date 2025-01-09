@@ -4,6 +4,9 @@ For when web shells do not work due to disabled PHP functions, this is the next 
 
 In many cases, a typical web shell or PHP reverse shell leverages functions like `system`, `exec`, `shell_exec`, or `passthru` to execute system commands on the server. However, some web servers are configured with security measures that disable these functions, effectively preventing standard shell commands from being executed. This script provides an alternative by allowing you to inject and execute PHP code directly, bypassing the limitations imposed by disabled system command functions. It is particularly useful in penetration testing scenarios where system-level access is restricted but the server still interprets PHP.
 
+![image](https://github.com/user-attachments/assets/1ba500d2-c8ad-483d-9d0a-929716240f10)
+
+
 ## Features
 
 - **Base64-Encoded Command Execution:** Safely inject and execute PHP payloads server-side.
